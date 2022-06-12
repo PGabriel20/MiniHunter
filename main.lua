@@ -14,6 +14,7 @@ function love.load()
 
   love.graphics.setDefaultFilter("nearest", "nearest")
 
+  -- Setup player
   player = {}
   player.x = 0
   player.y = 0
@@ -27,6 +28,7 @@ function love.load()
   player.animations.up = anim8.newAnimation(player.grid('1-6', 2), 0.2)
   player.animations.left = anim8.newAnimation(player.grid('1-6', 3), 0.2)
   player.animations.right = anim8.newAnimation(player.grid('1-6', 4), 0.2)
+  player.animations.hit = anim8.newAnimation(player.grid('1-6', 8), 0.2)
 
   -- posição incial da animação
   player.anim = player.animations.down
@@ -34,6 +36,8 @@ function love.load()
   -- Retangulo colisor para player
   player.collider = world:newBSGRectangleCollider(100, 100, 14, 14, 4)
   player.collider:setFixedRotation(true)
+
+  -- Setup inimigo
 
   walls = {}
 
@@ -56,6 +60,7 @@ end
 
 function love.update(dt)
   local isPlayerMoving = false
+  local isPlayerHitting = false
 
   local velocityX = 0
   local velocityY = 0
@@ -82,10 +87,18 @@ function love.update(dt)
     velocityY = player.speed
     player.anim = player.animations.down
     isPlayerMoving = true
+  elseif love.keyboard.isDown("space") then
+    player.anim = player.animations.hit
+    isPlayerMoving = true
+    isPlayerHitting = true
   end
-
+  
   if isPlayerMoving == false then
     player.anim:gotoFrame(2)
+  end
+
+  if isPlayerHitting == false then
+    player.anim = player.animations.down
   end
 
   player.collider:setLinearVelocity(velocityX, velocityY)
