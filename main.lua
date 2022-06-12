@@ -1,5 +1,11 @@
 function love.load()
   anim8 = require 'libs/anim8'
+  sti = require 'libs/sti'
+  camera = require 'libs/camera'
+
+  gameMap = sti('resources/maps/testMap.lua')
+  cam = camera()
+
   love.graphics.setDefaultFilter("nearest", "nearest")
 
   player = {}
@@ -24,6 +30,12 @@ end
 function love.update(dt)
   local isPlayerMoving = false
 
+  local width = love.graphics.getWidth()
+  local height = love.graphics.getHeight()
+
+  local mapWidth = gameMap.width * gameMap.tilewidth
+  local mapHeight = gameMap.height * gameMap.tileheight
+
   if love.keyboard.isDown("right") then
     player.x = player.x +  player.speed
     player.anim = player.animations.right
@@ -47,9 +59,35 @@ function love.update(dt)
   end
 
   player.anim:update(dt)
+  cam:lookAt(player.x, player.y)
+
+  -- Limitand visão da camera para esconder area fora do mapa
+  if cam.x < width/2 then
+    cam.x = width/2
+  end
+  
+  if cam.y < height/2 then
+    cam.y = height/2
+  end
+
+  if cam.x > (mapWidth - width/2) then
+    cam.x = (mapWidth - width/2)
+  end
+  
+  if cam.y > (mapHeight - height/2) then
+    cam.y = (mapHeight - height/2)
+  end
+
+
+
+
+  
 end
 
 function love.draw()
-  love.graphics.draw(background, 0, 0)
-  player.anim:draw(player.spriteSheet, player.x, player.y, nil, 10)
+  cam:attach()
+    gameMap:drawLayer(gameMap.layers["Ground"])
+    gameMap:drawLayer(gameMap.layers["Trees"])
+    player.anim:draw(player.spriteSheet, player.x, player.y, nil, 6, nil, 6, 9)
+  cam:detach()
 end
