@@ -35,9 +35,6 @@ function love.load()
   player.collider = world:newBSGRectangleCollider(100, 100, 14, 14, 4)
   player.collider:setFixedRotation(true)
 
-
-  background = love.graphics.newImage('resources/sprites/background.png')
-
   walls = {}
 
   if gameMap.layers['Borders'] then
