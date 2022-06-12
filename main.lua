@@ -15,15 +15,15 @@ function love.load()
   player.y = 200
   player.speed = 300
   player.sprite = love.graphics.newImage('resources/sprites/parrot.png')
-  player.spriteSheet = love.graphics.newImage('resources/sprites/champions/borg-sheet.png')
+  player.spriteSheet = love.graphics.newImage('resources/sprites/champions/axeman-sheet.png')
   player.grid = anim8.newGrid(16, 16, player.spriteSheet:getWidth(), player.spriteSheet:getHeight())
 
   -- Criando animações para o player de acordo com as linhas/colunas do sprite
   player.animations = {}
   player.animations.down = anim8.newAnimation(player.grid('1-6', 1), 0.2)
-  player.animations.up = anim8.newAnimation(player.grid('1-4', 2), 0.2)
-  player.animations.left = anim8.newAnimation(player.grid('1-4', 3), 0.2)
-  player.animations.right = anim8.newAnimation(player.grid('1-4', 4), 0.2)
+  player.animations.up = anim8.newAnimation(player.grid('1-6', 2), 0.2)
+  player.animations.left = anim8.newAnimation(player.grid('1-6', 3), 0.2)
+  player.animations.right = anim8.newAnimation(player.grid('1-6', 4), 0.2)
 
   -- posição incial da animação
   player.anim = player.animations.down
