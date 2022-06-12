@@ -1,21 +1,24 @@
+local scale = 3
+
 function love.load()
   anim8 = require 'libs/anim8'
   sti = require 'libs/sti'
   camera = require 'libs/camera'
   wf = require 'libs/windfield'
 
-  gameMap = sti('resources/maps/testMap.lua')
+  gameMap = sti('resources/maps/mainMap.lua')
   cam = camera()
   world = wf.newWorld(0, 0)
+
+  love.window.setMode(1200, 700)
 
   love.graphics.setDefaultFilter("nearest", "nearest")
 
   player = {}
-  player.x = 400
-  player.y = 200
-  player.speed = 300
-  player.sprite = love.graphics.newImage('resources/sprites/parrot.png')
-  player.spriteSheet = love.graphics.newImage('resources/sprites/champions/axeman-sheet.png')
+  player.x = 0
+  player.y = 0
+  player.speed = 150
+  player.spriteSheet = love.graphics.newImage('resources/sprites/champions/borg-sheet.png')
   player.grid = anim8.newGrid(16, 16, player.spriteSheet:getWidth(), player.spriteSheet:getHeight())
 
   -- Criando animações para o player de acordo com as linhas/colunas do sprite
@@ -29,7 +32,7 @@ function love.load()
   player.anim = player.animations.down
 
   -- Retangulo colisor para player
-  player.collider = world:newBSGRectangleCollider(400, 250, 50, 100, 12)
+  player.collider = world:newBSGRectangleCollider(100, 100, 14, 14, 4)
   player.collider:setFixedRotation(true)
 
 
@@ -37,8 +40,8 @@ function love.load()
 
   walls = {}
 
-  if gameMap.layers['Walls'] then
-    for i, object in pairs(gameMap.layers['Walls'].objects) do
+  if gameMap.layers['Borders'] then
+    for i, object in pairs(gameMap.layers['Borders'].objects) do
       local wall = world:newRectangleCollider(object.x, object.y, object.width, object.height)
       wall:setType('static')
 
@@ -85,10 +88,10 @@ function love.update(dt)
   player.collider:setLinearVelocity(velocityX, velocityY)
 
   player.anim:update(dt)
-  cam:lookAt(player.x, player.y)
+  cam:lookAt(player.x * scale, player.y * scale)
 
   world:update(dt)
-  player.x = player.collider:getX()
+  player.x = player.collider:getX() - 6
   player.y = player.collider:getY()
 
   -- Limitand visão da camera para esconder area fora do mapa
@@ -100,20 +103,21 @@ function love.update(dt)
     cam.y = height/2
   end
 
-  if cam.x > (mapWidth - width/2) then
-    cam.x = (mapWidth - width/2)
+  if cam.x > ((mapWidth * scale) - width/2) then
+    cam.x = ((mapWidth * scale) - width/2)
   end
   
-  if cam.y > (mapHeight - height/2) then
-    cam.y = (mapHeight - height/2)
+  if cam.y > ((mapHeight * scale) - height/2) then
+    cam.y = ((mapHeight * scale) - height/2)
   end
 end
 
 function love.draw()
   cam:attach()
+    love.graphics.scale(scale)
     gameMap:drawLayer(gameMap.layers["Ground"])
-    gameMap:drawLayer(gameMap.layers["Trees"])
-    player.anim:draw(player.spriteSheet, player.x, player.y, nil, 6, nil, 6, 9)
-    -- world:draw()
+    gameMap:drawLayer(gameMap.layers["Nature"])
+    player.anim:draw(player.spriteSheet, player.x, player.y, nil, 1, nil, 2, 8)
+    world:draw()
   cam:detach()
 end
