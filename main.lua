@@ -1,6 +1,8 @@
-local scale = 3
+local scale = 1
 local enemiesKilled = 0
 local distance = 0
+local spawnEnemyTimerMax = 7
+local spawnEnemyTimer = spawnEnemyTimerMax
 
 function love.load()
   anim8 = require 'libs/anim8'
@@ -72,16 +74,20 @@ function CheckColision(x1, y1, w1, h1, x2, y2, w2, h2)
 end
 
 function SpawnEnemy()
+  local randomX = love.math.random(1,love.graphics.getWidth())
+  local randomY = love.math.random(1,love.graphics.getHeight())
+
   enemy = {}
-  enemy.x = 200
-  enemy.y = 120
+  enemy.x = randomX
+  enemy.y = randomY
   enemy.speed = 5
   enemy.health = 300
   enemy.hitting = false
+  enemy.distance = 0
   enemy.spriteSheet = love.graphics.newImage('resources/sprites/MiniWorldSprites/Characters/Monsters/Orcs/ClubGoblin.png')
   enemy.grid = anim8.newGrid(16, 16, enemy.spriteSheet:getWidth(), enemy.spriteSheet:getHeight())
 
-  -- -- Criando animações para o enemy de acordo com as linhas/colunas do sprite
+  -- Criando animações para o enemy de acordo com as linhas/colunas do sprite
   enemy.animations = {}
   enemy.animations.down = anim8.newAnimation(enemy.grid('1-5', 1), 0.2)
   enemy.animations.up = anim8.newAnimation(enemy.grid('1-5', 2), 0.2)
@@ -91,7 +97,9 @@ function SpawnEnemy()
 
   enemy.anim = enemy.animations.down
 
-  table.insert(enemies, enemy)
+  if (randomY < 240 or randomY > 436) and (randomX < 528 or randomX > 656) then
+    table.insert(enemies, enemy)
+  end
 end
 
 function KillEnemy(index, damage)
@@ -188,12 +196,12 @@ function love.update(dt)
     enemyDirectionX = player.x - enemy.x
     enemyDirectionY = player.y - enemy.y
     
-    distance = math.sqrt(enemyDirectionX * enemyDirectionX + enemyDirectionY * enemyDirectionY)
+    enemy.distance = math.sqrt(enemyDirectionX * enemyDirectionX + enemyDirectionY * enemyDirectionY)
     
-    if distance < 300 then
+    if enemy.distance < 100 then
       for i, enemy in ipairs(enemies) do
-        enemy.x = enemy.x + enemyDirectionX / distance * 20 * dt
-        enemy.y = enemy.y + enemyDirectionY / distance * 20 * dt
+        enemy.x = enemy.x + enemyDirectionX / enemy.distance * 20 * dt
+        enemy.y = enemy.y + enemyDirectionY / enemy.distance * 20 * dt
       end
 
       -- se distância menor que 20, bater no player
@@ -219,6 +227,13 @@ function love.update(dt)
     end
     
     enemy.anim:update(dt)
+  end
+
+  spawnEnemyTimer = spawnEnemyTimer - (1*dt)
+
+  if spawnEnemyTimer <= 0 then
+    spawnEnemyTimer = spawnEnemyTimerMax
+    SpawnEnemy()
   end
   
   world:update(dt)
@@ -250,4 +265,5 @@ function love.draw()
   love.graphics.print("dev: player hitting: " ..tostring(isPlayerHitting), 0, 36)
   love.graphics.print("dev: X: " ..player.x, 0, 48)
   love.graphics.print("dev: Y: " ..player.y, 0, 60)
+  love.graphics.print("dev: Timer: " ..spawnEnemyTimer, 0, 72)
 end
