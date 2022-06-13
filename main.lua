@@ -75,19 +75,12 @@ function love.load()
 end
 
 function love.keypressed(key, unicode)
+  if player.health <= 0 then
+    love.load()
+  end
+
   if key == "escape" then
     love.event.quit()
-  elseif key == 'rctrl' then
-    local title = "This is a title"
-    local message = "This is some text"
-    local buttons = {"OK", "No!", "Help", escapebutton = 2}
-
-    local pressedbutton = love.window.showMessageBox(title, message, buttons)
-    if pressedbutton == 1 then
-        -- "OK" was pressed
-    elseif pressedbutton == 2 then
-        -- etc.
-    end
   elseif key == 'lctrl' then
     SpawnEnemy()
   end
@@ -298,8 +291,8 @@ function love.draw()
     -- world:draw()
     cam:detach()
     
-  love.graphics.setColor(255,0,0)
-  love.graphics.rectangle('fill', 0, 0, 200, 70, 5, 5, 10 )
+  love.graphics.setColor(111,0,0)
+  love.graphics.rectangle('fill', 0, 0, 200, 100, 5, 5, 10 )
   love.graphics.setColor(255,255,255,255)
   love.graphics.print("Saúde: " ..math.floor(player.health+0.5), 0, 0)
   love.graphics.print("Inimigos eliminados: " ..enemiesKilled, 0, 12)
@@ -308,8 +301,12 @@ function love.draw()
   love.graphics.print("dev: X: " ..player.x, 0, 48)
   love.graphics.print("dev: Y: " ..player.y, 0, 60)
   love.graphics.print("dev: Timer: " ..spawnEnemyTimer, 0, 72)
-
+  
   if player.health <= 0 then
+    love.graphics.setColor( 0, 0, 0, 10)
+    love.graphics.rectangle("fill", 0, 0, 1200, 700) -- screensize is 100x100
+    love.graphics.setColor(95,181,238)
     love.graphics.draw(deathScreen, love.graphics.getWidth()/2, (love.graphics.getHeight() * 2)/2, 0, 1, 1, deathScreen:getWidth()/2, deathScreen:getWidth()/2)
+    love.graphics.print("Pressione qualquer tecla para reiniciar", love.graphics.getWidth()/2, (love.graphics.getHeight() * 2)/2, 0, 1, 1, deathScreen:getWidth()/2, deathScreen:getWidth()/2)
   end
 end
