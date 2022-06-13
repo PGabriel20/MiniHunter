@@ -1,7 +1,7 @@
-local scale = 1
+local scale = 3
 local enemiesKilled = 0
 local distance = 0
-local spawnEnemyTimerMax = 7
+local spawnEnemyTimerMax = 5
 local spawnEnemyTimer = spawnEnemyTimerMax
 
 function love.load()
@@ -9,6 +9,15 @@ function love.load()
   sti = require 'libs/sti'
   camera = require 'libs/camera'
   wf = require 'libs/windfield'
+
+  sounds = {}
+  sounds.blip = love.audio.newSource('resources/sounds/blip.wav', 'static')
+  sounds.music = love.audio.newSource('resources/sounds/music.mp3', 'stream')
+  sounds.walking = love.audio.newSource('resources/sounds/walking.mp3', 'static')
+  sounds.hit = love.audio.newSource('resources/sounds/metal-hit.wav', 'static')
+  sounds.slash = love.audio.newSource('resources/sounds/sword-slash.mp3', 'static')
+
+  -- sounds.music:play()
 
   -- Criando câmera, mundo e mapa
   gameMap = sti('resources/maps/mainMap.lua')
@@ -64,6 +73,17 @@ end
 function love.keypressed(key, unicode)
   if key == "escape" then
     love.event.quit()
+  elseif key == 'rctrl' then
+    local title = "This is a title"
+    local message = "This is some text"
+    local buttons = {"OK", "No!", "Help", escapebutton = 2}
+
+    local pressedbutton = love.window.showMessageBox(title, message, buttons)
+    if pressedbutton == 1 then
+        -- "OK" was pressed
+    elseif pressedbutton == 2 then
+        -- etc.
+    end
   elseif key == 'lctrl' then
     SpawnEnemy()
   end
@@ -108,6 +128,7 @@ function KillEnemy(index, damage)
   if enemies[index].health <= 0 then
     table.remove(enemies, index)
     enemiesKilled = enemiesKilled + 1
+    player.health = player.health + 10
   end
 end
 
@@ -135,22 +156,27 @@ function love.update(dt)
     velocityX = player.speed
     player.anim = player.animations.right
     isPlayerMoving = true
+    sounds.walking:play()
   elseif love.keyboard.isDown("left", "a") then
     velocityX = player.speed * -1
     player.anim = player.animations.left
     isPlayerMoving = true
+    sounds.walking:play()
   elseif love.keyboard.isDown("up", "w") then
     velocityY = player.speed * -1
     player.anim = player.animations.up
     isPlayerMoving = true
+    sounds.walking:play()
   elseif love.keyboard.isDown("down", "s") then
     velocityY = player.speed
     player.anim = player.animations.down
     isPlayerMoving = true
+    sounds.walking:play()
   elseif love.keyboard.isDown("space") then
     player.anim = player.animations.hit
     isPlayerMoving = true
     isPlayerHitting = true
+    sounds.hit:play()
   end
   
   player.anim:update(dt)
@@ -163,10 +189,13 @@ function love.update(dt)
   -- Parando animações de bater e andar
   if isPlayerMoving == false then
     player.anim:gotoFrame(2)
+    sounds.walking:stop()
   end
 
   if isPlayerHitting == false and isPlayerMoving == false then
     player.anim = player.animations.down
+    sounds.slash:pause()
+    sounds.walking:pause()
   end
 
   -- Camera acompanhando player
@@ -205,7 +234,7 @@ function love.update(dt)
       end
 
       -- se distância menor que 20, bater no player
-      if distance <= 20 then
+      if enemy.distance <= 20 then
         enemy.anim = enemy.animations.hit
         enemy.hitting = true
       else 
@@ -214,9 +243,12 @@ function love.update(dt)
       end
     end
     
-    if(isPlayerHitting == true and  distance <= 20) then
-      if CheckColision(enemy.x, enemy.y, enemy.spriteSheet:getWidth(), enemy.spriteSheet:getHeight(), player.x, player.y, 16, 16) then
+    if(isPlayerHitting == true ) then
+      if CheckColision(enemy.x, enemy.y, enemy.spriteSheet:getWidth(), enemy.spriteSheet:getHeight(), player.x, player.y, 16, 16) and enemy.distance <= 30 then
         KillEnemy(i, player.damage)
+        sounds.slash:play()
+      else
+        sounds.hit:play()
       end
     end
     
@@ -252,10 +284,11 @@ function love.draw()
       enemy.anim:draw(enemy.spriteSheet, enemy.x, enemy.y, nil, 1, nil, 2, 8)
       love.graphics.setColor(255,0,0)
       love.graphics.print(math.floor(enemy.health+0.5), enemy.x, enemy.y)
+      love.graphics.setColor(255,255,255,255)
     end
     -- world:draw()
-  cam:detach()
-
+    cam:detach()
+    
   love.graphics.setColor(255,0,0)
   love.graphics.rectangle('fill', 0, 0, 200, 70, 5, 5, 10 )
   love.graphics.setColor(255,255,255,255)
