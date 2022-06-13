@@ -17,8 +17,11 @@ function love.load()
   sounds.hit = love.audio.newSource('resources/sounds/metal-hit.wav', 'static')
   sounds.armorHit = love.audio.newSource('resources/sounds/armor-hit.wav', 'static')
   sounds.slash = love.audio.newSource('resources/sounds/sword-slash.mp3', 'static')
+  sounds.death = love.audio.newSource('resources/sounds/death.mp3', 'static')
 
   -- sounds.music:play()
+  window_width, window_height = love.graphics.getDimensions()
+  deathScreen = love.graphics.newImage('resources/images/death.png')
 
   -- Criando câmera, mundo e mapa
   gameMap = sti('resources/maps/mainMap.lua')
@@ -269,6 +272,10 @@ function love.update(dt)
     spawnEnemyTimer = spawnEnemyTimerMax
     SpawnEnemy()
   end
+
+  if player.health <= 0 then
+    sounds.death:play()
+  end
   
   world:update(dt)
 end
@@ -301,4 +308,8 @@ function love.draw()
   love.graphics.print("dev: X: " ..player.x, 0, 48)
   love.graphics.print("dev: Y: " ..player.y, 0, 60)
   love.graphics.print("dev: Timer: " ..spawnEnemyTimer, 0, 72)
+
+  if player.health <= 0 then
+    love.graphics.draw(deathScreen, love.graphics.getWidth()/2, (love.graphics.getHeight() * 2)/2, 0, 1, 1, deathScreen:getWidth()/2, deathScreen:getWidth()/2)
+  end
 end
