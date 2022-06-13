@@ -15,6 +15,7 @@ function love.load()
   sounds.music = love.audio.newSource('resources/sounds/music.mp3', 'stream')
   sounds.walking = love.audio.newSource('resources/sounds/walking.mp3', 'static')
   sounds.hit = love.audio.newSource('resources/sounds/metal-hit.wav', 'static')
+  sounds.armorHit = love.audio.newSource('resources/sounds/armor-hit.wav', 'static')
   sounds.slash = love.audio.newSource('resources/sounds/sword-slash.mp3', 'static')
 
   -- sounds.music:play()
@@ -33,7 +34,7 @@ function love.load()
   player.y = 0
   player.health = 100
   player.damage = 2
-  player.speed = 150
+  player.speed = 70
   player.hitting = false
   player.spriteSheet = love.graphics.newImage('resources/sprites/champions/borg-sheet.png')
   player.grid = anim8.newGrid(16, 16, player.spriteSheet:getWidth(), player.spriteSheet:getHeight())
@@ -255,6 +256,7 @@ function love.update(dt)
     if enemy.hitting == true then
       if CheckColision(enemy.x, enemy.y, enemy.spriteSheet:getWidth(), enemy.spriteSheet:getHeight(), player.x, player.y, 16, 16) then
         DealDamage(dt * 10)
+        sounds.armorHit:play()
       end
     end
     
