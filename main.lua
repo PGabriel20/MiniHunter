@@ -1,7 +1,7 @@
 local scale = 3
 local enemiesKilled = 0
 local distance = 0
-local spawnEnemyTimerMax = 5
+local spawnEnemyTimerMax = 3
 local spawnEnemyTimer = spawnEnemyTimerMax
 
 function love.load()
@@ -292,15 +292,15 @@ function love.draw()
     cam:detach()
     
   love.graphics.setColor(111,0,0)
-  love.graphics.rectangle('fill', 0, 0, 200, 100, 5, 5, 10 )
+  love.graphics.rectangle('fill', 0, 0, 200, 30, 5, 5, 10 )
   love.graphics.setColor(255,255,255,255)
   love.graphics.print("Saúde: " ..math.floor(player.health+0.5), 0, 0)
   love.graphics.print("Inimigos eliminados: " ..enemiesKilled, 0, 12)
-  love.graphics.print("dev: distance: " ..distance, 0, 24)
-  love.graphics.print("dev: player hitting: " ..tostring(isPlayerHitting), 0, 36)
-  love.graphics.print("dev: X: " ..player.x, 0, 48)
-  love.graphics.print("dev: Y: " ..player.y, 0, 60)
-  love.graphics.print("dev: Timer: " ..spawnEnemyTimer, 0, 72)
+  -- love.graphics.print("dev: distance: " ..distance, 0, 24)
+  -- love.graphics.print("dev: player hitting: " ..tostring(isPlayerHitting), 0, 36)
+  -- love.graphics.print("dev: X: " ..player.x, 0, 48)
+  -- love.graphics.print("dev: Y: " ..player.y, 0, 60)
+  -- love.graphics.print("dev: Timer: " ..spawnEnemyTimer, 0, 72)
   
   if player.health <= 0 then
     love.graphics.setColor( 0, 0, 0, 10)
