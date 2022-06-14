@@ -82,7 +82,7 @@ function love.keypressed(key, unicode)
   if key == "escape" then
     love.event.quit()
   elseif key == 'lctrl' then
-    SpawnEnemy()
+    player.health = 0
   end
 end
 
@@ -307,6 +307,6 @@ function love.draw()
     love.graphics.rectangle("fill", 0, 0, 1200, 700) -- screensize is 100x100
     love.graphics.setColor(95,181,238)
     love.graphics.draw(deathScreen, love.graphics.getWidth()/2, (love.graphics.getHeight() * 2)/2, 0, 1, 1, deathScreen:getWidth()/2, deathScreen:getWidth()/2)
-    love.graphics.print("Pressione qualquer tecla para reiniciar", love.graphics.getWidth()/2, (love.graphics.getHeight() * 2)/2, 0, 1, 1, deathScreen:getWidth()/2, deathScreen:getWidth()/2)
+    love.graphics.print("Pressione qualquer tecla para reiniciar", love.graphics.getWidth(), (love.graphics.getHeight()), 0, 1, 1, deathScreen:getWidth(), deathScreen:getWidth())
   end
 end
