@@ -291,7 +291,7 @@ function love.draw()
     -- world:draw()
     cam:detach()
     
-  love.graphics.setColor(111,0,0)
+  love.graphics.setColor( 0, 0, 0, 60)
   love.graphics.rectangle('fill', 0, 0, 200, 30, 5, 5, 10 )
   love.graphics.setColor(255,255,255,255)
   love.graphics.print("Saúde: " ..math.floor(player.health+0.5), 0, 0)
